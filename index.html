@@ -1,113 +1,5 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penilaian Interaktif - Selamatkan Makhluk Hidup</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
-    
-    <!-- Chosen Palette: Professional Blue and Neutral Grays -->
-    <!-- Application Structure Plan: An interactive, single-question-at-a-time quiz format. This focuses user attention and allows for immediate, contextual feedback after each question by revealing a detailed 'HOTS Analysis' card. This 'Review & Learn' approach is better for understanding than a simple test format. Navigation is linear with 'Next/Previous' buttons, culminating in a final summary screen. -->
-    <!-- Visualization & Content Choices:
-    - Report Info: 5 HOTS MCQs -> Goal: Assess & Explain -> Presentation: Interactive quiz cards -> Interaction: Clickable options reveal a 'HOTS Analysis' info box -> Justification: Instant feedback enhances learning and understanding of complex reasoning -> Library/Method: Vanilla JS, Tailwind CSS.
-    - Report Info: Detailed HOTS Analysis -> Goal: Explain Reasoning -> Presentation: A visually distinct info box (`bg-blue-50`) that appears after answering -> Interaction: Revealed on answer selection -> Justification: Connects the 'what' (the answer) with the 'why' (the reasoning) immediately -> Library/Method: JS DOM manipulation, CSS transitions.
-    - Report Info: Assessment Structure -> Goal: User Orientation -> Presentation: Progress bar and question counter (e.g., "Soal 1 dari 5") -> Interaction: Updates dynamically with navigation -> Justification: Improves usability and reduces cognitive load -> Library/Method: JS DOM manipulation. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+// GANTI SEMUA KODE <script>...</script> LAMA DENGAN KODE INI
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
-        }
-        h1, h2, h3 {
-            font-family: 'Poppins', sans-serif;
-        }
-        .quiz-option {
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-        }
-        .quiz-option:not(.disabled):hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border-color: #60a5fa; /* border-blue-400 */
-        }
-        .quiz-option.selected {
-            border-width: 2px;
-        }
-        .quiz-option.correct {
-            background-color: #dcfce7; /* bg-green-100 */
-            border-color: #22c55e; /* border-green-500 */
-        }
-        .quiz-option.incorrect {
-            background-color: #fee2e2; /* bg-red-100 */
-            border-color: #ef4444; /* border-red-500 */
-        }
-        .quiz-option.disabled {
-            cursor: not-allowed;
-        }
-        .analysis-card {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
-            opacity: 0;
-        }
-        .analysis-card.show {
-            max-height: 500px;
-            opacity: 1;
-        }
-        .progress-bar-fill {
-            transition: width 0.5s ease-in-out;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <main class="w-full max-w-4xl">
-        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10">
-            <div id="quiz-area">
-                <header class="text-center mb-8">
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Penilaian Harian</h1>
-                    <p class="text-gray-500 mt-2">Tema 1: Selamatkan Makhluk Hidup (PPKn & SBdP)</p>
-                </header>
-
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-lg font-bold text-blue-600" id="question-counter">Soal 1 dari 5</h2>
-                        <span class="text-sm font-semibold text-gray-600" id="score-display">Skor: 0</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full progress-bar-fill" style="width: 20%"></div>
-                    </div>
-                </div>
-
-                <div id="question-container">
-                    <!-- Question content is rendered here by JS -->
-                </div>
-
-                <div class="flex justify-between mt-8">
-                    <button id="prev-btn" class="bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Sebelumnya</button>
-                    <button id="next-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Selanjutnya</button>
-                </div>
-            </div>
-
-            <div id="summary-area" class="hidden text-center py-10">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4">Penilaian Selesai!</h2>
-                <p class="text-gray-600 text-lg mb-6">Kamu telah menyelesaikan penilaian harian ini.</p>
-                <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-8 max-w-sm mx-auto">
-                    <p class="text-gray-500 text-sm font-semibold">SKOR AKHIR</p>
-                    <p id="final-score" class="text-7xl font-bold text-blue-600 my-2">100</p>
-                    <p id="final-feedback" class="text-gray-700 font-medium">Luar biasa! Pemahamanmu sangat baik.</p>
-                </div>
-                <button id="restart-btn" class="mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">Ulangi Penilaian</button>
-            </div>
-        </div>
-        <footer class="text-center mt-6 text-gray-500 text-sm">
-            <p>&copy; 2025 Penilaian Interaktif Kelas VI</p>
-        </footer>
-    </main>
-<script>
 const quizData = [
     {
         question: "Saat jam istirahat, Budi melihat temannya, Wayan, sedang berdoa di sudut kelas sebelum makan bekalnya. Di saat yang sama, beberapa teman lain mengajak Budi untuk segera bermain kejar-kejaran di dalam kelas. Sikap terbaik yang seharusnya Budi lakukan yang mencerminkan nilai sila pertama dan kedua Pancasila sekaligus adalah...",
@@ -117,7 +9,7 @@ const quizData = [
             "Menegur Wayan agar berdoa lebih cepat karena mengganggu teman-teman yang ingin bermain.",
             "Diam saja dan menunggu Wayan selesai berdoa, baru kemudian ikut bermain di dalam kelas."
         ],
-        answer: 1, // index of correct answer
+        answer: 1,
         analysis: "Pilihan ini menunjukkan sikap <strong>menghormati orang beribadah (Sila 1)</strong> dan <strong>menjaga perasaan serta hak orang lain (Sila 2)</strong> dengan cara yang solutif. Pilihan lain hanya fokus pada satu aspek atau bahkan melanggar nilai Pancasila."
     },
     {
@@ -181,6 +73,7 @@ const restartBtn = document.getElementById('restart-btn');
 let currentQuestionIndex = 0;
 let userAnswers = new Array(quizData.length).fill(null);
 let score = 0;
+let studentName = '';
 
 function renderQuestion(index) {
     const questionData = quizData[index];
@@ -254,7 +147,7 @@ function updateUI() {
     progressBar.style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
     
     prevBtn.disabled = currentQuestionIndex === 0;
-    nextBtn.disabled = currentQuestionIndex === quizData.length - 1 && userAnswers[currentQuestionIndex] === null;
+    nextBtn.disabled = userAnswers[currentQuestionIndex] === null;
     
     if (currentQuestionIndex === quizData.length - 1) {
         if (userAnswers[currentQuestionIndex] !== null) {
@@ -267,6 +160,23 @@ function updateUI() {
         nextBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
         nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
     }
+}
+
+function submitToGoogleForm(name, finalScore) {
+    const formUrl = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdKVYwwTrB-AqVNGEXBlfzFyYFOQhtT2vo6uarwFHzZA6YFcw/formResponse
+"; 
+    const nameEntryId = "entry.283058117"; 
+    const scoreEntryId = "entry.1692873695"; 
+
+    const formData = new FormData();
+    formData.append(nameEntryId, name);
+    formData.append(scoreEntryId, finalScore);
+
+    fetch(formUrl, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors' 
+    }).catch(error => console.error('Error!', error.message));
 }
 
 function showSummary() {
@@ -286,6 +196,17 @@ function showSummary() {
         feedback = 'Jangan menyerah! Coba ulangi dan pelajari lagi analisis jawabannya.';
     }
     finalFeedbackEl.textContent = feedback;
+
+    submitToGoogleForm(studentName, finalScore);
+}
+
+function startQuiz() {
+    studentName = prompt("Silakan masukkan nama lengkap Anda:", "");
+    if (studentName && studentName.trim() !== "") {
+        renderQuestion(currentQuestionIndex);
+    } else {
+        alert("Nama tidak boleh kosong untuk memulai penilaian.");
+    }
 }
 
 nextBtn.addEventListener('click', () => {
@@ -311,12 +232,9 @@ restartBtn.addEventListener('click', () => {
     score = 0;
     summaryArea.classList.add('hidden');
     quizArea.classList.remove('hidden');
-    renderQuestion(currentQuestionIndex);
+    startQuiz();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderQuestion(currentQuestionIndex);
+    startQuiz();
 });
-</script>
-</body>
-</html>
